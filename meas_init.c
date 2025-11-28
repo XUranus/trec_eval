@@ -28,8 +28,10 @@ static int get_long_cutoffs(PARAMS * params, char *param_string);
 static int get_double_cutoffs(PARAMS * params, char *param_string);
 static int get_double_params(PARAMS * params, char *param_string);
 static int get_param_pairs(PARAMS * params, char *param_string);
-static int comp_long();
-static int comp_double();
+// static int comp_long();
+// static int comp_double();
+static int comp_long(long *ptr1, long *ptr2);
+static int comp_double(double *ptr1, double *ptr2);
 static char *append_long(char *name, long value);
 static char *append_double(char *name, double value);
 static char *append_string(char *name, char *value);
@@ -289,7 +291,7 @@ static int get_long_cutoffs(PARAMS * params, char *param_string)
     cutoffs[num_cutoffs++] = atol(start_ptr);
 
     /* Sort cutoffs in increasing order */
-    qsort((char *) cutoffs, (int) num_cutoffs, sizeof(long), comp_long);
+    qsort((char *) cutoffs, (int) num_cutoffs, sizeof(long), (int (*)(const void *, const void *))comp_long);
 
     /* Sanity checking: cutoffs > 0 and non-duplicates */
     if (cutoffs[0] <= 0) {
@@ -342,7 +344,7 @@ static int get_double_cutoffs(PARAMS * params, char *param_string)
     cutoffs[num_cutoffs++] = atof(start_ptr);
 
     /* Sort cutoffs in increasing order */
-    qsort((char *) cutoffs, (int) num_cutoffs, sizeof(double), comp_double);
+    qsort((char *) cutoffs, (int) num_cutoffs, sizeof(double), (int (*)(const void *, const void *))comp_double);
 
     /* Sanity checking: non-duplicates */
     for (i = 1; i < num_cutoffs; i++) {

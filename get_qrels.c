@@ -62,7 +62,7 @@ typedef struct {
 static int parse_qrels_line(char **start_ptr, char **qid_ptr,
                             char **docno_ptr, char **rel_ptr);
 
-static int comp_lines_qid_docno();
+static int comp_lines_qid_docno(LINES * ptr1, LINES * ptr2);
 
 
 /* static pools of memory, allocated here and never changed.  
@@ -142,7 +142,7 @@ int te_get_qrels(EPI * epi, char *text_qrels_file, ALL_REL_INFO * all_rel_info)
     num_lines = line_ptr - lines;
 
     /* Sort all lines by qid, then docno */
-    qsort((char *) lines, (int) num_lines, sizeof(LINES), comp_lines_qid_docno);
+    qsort((char *) lines, (int) num_lines, sizeof(LINES), (int (*)(const void *, const void *))comp_lines_qid_docno);
 
     /* Go through lines and count number of qid */
     num_qid = 1;

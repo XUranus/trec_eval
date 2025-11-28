@@ -28,8 +28,6 @@
    UNDEF returned if error, 0 if used cache values, 1 if new values.
 */
 
-static int comp_rank_judged(), comp_sim_docno(), comp_docno();
-
 /* Definitions used for temporary and cached values */
 typedef struct {
     char *docno;
@@ -37,6 +35,10 @@ typedef struct {
     long rank;
     long rel;
 } DOCNO_INFO;
+
+static int comp_rank_judged(DOCNO_INFO *ptr1, DOCNO_INFO *ptr2);
+static int comp_docno(DOCNO_INFO *ptr1, DOCNO_INFO *ptr2);
+static int comp_sim_docno(DOCNO_INFO *ptr1, DOCNO_INFO *ptr2);
 
 /* Current cached query */
 static char *current_query = "no query";
@@ -119,7 +121,7 @@ te_form_res_rels_jg(const EPI * epi, const REL_INFO * rel_info,
 
     /* Sort results by sim, breaking ties lexicographically using docno */
     qsort((char *) docno_info,
-          (int) num_results, sizeof(DOCNO_INFO), comp_sim_docno);
+          (int) num_results, sizeof(DOCNO_INFO), (int (*)(const void *, const void *))comp_sim_docno);
 
     /* Only look at epi->max_num_docs_per_topic (not normally an issue) */
     if (num_results > epi->max_num_docs_per_topic)
@@ -132,7 +134,7 @@ te_form_res_rels_jg(const EPI * epi, const REL_INFO * rel_info,
 
     /* Sort trec_top lexicographically */
     qsort((char *) docno_info,
-          (int) num_results, sizeof(DOCNO_INFO), comp_docno);
+          (int) num_results, sizeof(DOCNO_INFO), (int (*)(const void *, const void *))comp_docno);
 
     /* Error checking for duplicates */
     for (i = 1; i < num_results; i++) {
@@ -214,7 +216,7 @@ te_form_res_rels_jg(const EPI * epi, const REL_INFO * rel_info,
             long rrl;
             /* Sort tuples by increasing rank among judged docs */
             qsort((char *) docno_info,
-                  (int) num_results, sizeof(DOCNO_INFO), comp_rank_judged);
+                  (int) num_results, sizeof(DOCNO_INFO), (int (*)(const void *, const void *))comp_rank_judged);
             rrl = 0;
             i = 0;
             while (i < num_results && docno_info[i].rel >= 0) {
@@ -226,7 +228,7 @@ te_form_res_rels_jg(const EPI * epi, const REL_INFO * rel_info,
             /* resort by docno for next jg */
             if (jg != num_jgs - 1)
                 qsort((char *) docno_info,
-                      (int) num_results, sizeof(DOCNO_INFO), comp_docno);
+                      (int) num_results, sizeof(DOCNO_INFO), (int (*)(const void *, const void *))comp_docno);
         } else {
             /* Normal path.  Assign rel value to appropriate rank */
             for (i = 0; i < num_results; i++) {

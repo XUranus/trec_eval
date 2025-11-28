@@ -114,11 +114,6 @@ important future research problem.
 
 */
 
-static int parse_prefs_line(char **start_ptr, char **qid_ptr, char **jg_ptr,
-                            char **jsg_ptr, char **docno_ptr, char **rel_ptr);
-static int comp_lines_qid_docno();
-
-
 /* static pools of memory, allocated here and never changed.  
    Declared static so one day I can write a cleanup procedure to free them */
 static char *trec_prefs_buf = NULL;
@@ -134,6 +129,10 @@ typedef struct {
     char *docno;
     char *rel;
 } LINES;
+
+static int parse_prefs_line(char **start_ptr, char **qid_ptr, char **jg_ptr,
+                            char **jsg_ptr, char **docno_ptr, char **rel_ptr);
+static int comp_lines_qid_docno(LINES * ptr1, LINES * ptr2);
 
 int te_get_prefs(EPI * epi, char *text_prefs_file, ALL_REL_INFO * all_rel_info)
 {
@@ -194,7 +193,7 @@ int te_get_prefs(EPI * epi, char *text_prefs_file, ALL_REL_INFO * all_rel_info)
     num_lines = line_ptr - lines;
 
     /* Sort all lines by qid, then docno */
-    qsort((char *) lines, (int) num_lines, sizeof(LINES), comp_lines_qid_docno);
+    qsort((char *) lines, (int) num_lines, sizeof(LINES), (int (*)(const void *, const void *))comp_lines_qid_docno);
 
     /* Go through lines and count number of qid */
     num_qid = 1;

@@ -40,7 +40,7 @@ static int parse_results_line(char **start_ptr, char **qid_ptr,
                               char **docno_ptr, char **sim_ptr,
                               char **run_id_ptr);
 
-static int comp_lines_qid_docno();
+static int comp_lines_qid_docno(LINES * ptr1, LINES * ptr2);
 
 
 /* static pools of memory, allocated here and never changed.  
@@ -146,7 +146,7 @@ te_get_trec_results(EPI * epi, char *text_results_file,
     num_lines = line_ptr - lines;
 
     /* Sort all lines by qid, then docno */
-    qsort((char *) lines, (int) num_lines, sizeof(LINES), comp_lines_qid_docno);
+    qsort((char *) lines, (int) num_lines, sizeof(LINES), (int (*)(const void *, const void *))comp_lines_qid_docno);
 
     /* Go through lines and count number of qid */
     num_qid = 1;

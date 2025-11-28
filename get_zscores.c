@@ -55,7 +55,7 @@ typedef struct {
 static int parse_zscore_line(char **start_ptr, char **qid_ptr, char **meas_ptr,
                              char **mean_ptr, char **stddev_ptr);
 
-static int comp_lines_qid_meas();
+static int comp_lines_qid_meas(LINES * ptr1, LINES * ptr2);
 
 
 /* static pools of memory, allocated here and never changed.  */
@@ -122,7 +122,7 @@ te_get_zscores(const EPI * epi, const char *zscores_file,
     num_lines = line_ptr - lines;
 
     /* Sort all lines by qid, then meas */
-    qsort((char *) lines, (int) num_lines, sizeof(LINES), comp_lines_qid_meas);
+    qsort((char *) lines, (int) num_lines, sizeof(LINES), (int (*)(const void *, const void *))comp_lines_qid_meas);
 
     /* Go through lines and count number of qid */
     num_qid = 1;
